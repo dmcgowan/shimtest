@@ -59,6 +59,7 @@ func (s *RunSuite) Run(t *testing.T) {
 	t.Run("OutputThenExit", s.testOutputThenExit)
 	t.Run("Events", s.testEvents)
 	t.Run("FastExitInit", s.testFastExitInit)
+	s.registerPlatformRunTests(t)
 }
 
 // testLifecycle drives a container through create / start / state /
