@@ -107,7 +107,10 @@ func (s *SandboxSuite) benchContainerCreate(b *testing.B) {
 			b.Fatal("mkdir rootfs:", err)
 		}
 		rootfsMounts := buildSandboxMemberMounts(b, s.cfg, imgs, rootfsDir, bundleDir)
-		cfg := Config{FormatMounts: s.cfg.FormatMounts}
+		cfg := Config{
+			FormatMounts:         s.cfg.FormatMounts,
+			ContainerAnnotations: s.cfg.ContainerAnnotations,
+		}
 		createOCISpec(b, bundleDir, []string{"/bin/exit", "0"}, cfg)
 
 		stdoutPath, stderrPath := createIOFifos(b, bundleDir)

@@ -58,6 +58,7 @@ type sandboxEnv struct {
 	tc        taskAPI.TTRPCTaskService
 	sandboxID string
 	address   string
+	cfg       Config
 
 	mu         sync.Mutex
 	containers []string                    // member container IDs in creation order
@@ -171,7 +172,8 @@ func createContainerInSandbox(tb testing.TB, env *sandboxEnv, args []string, spe
 	// directly into bundleDir/rootfs and returns nil mounts.  In that
 	// case we provide a single bind mount of that pre-extracted dir so
 	// ShareRootfs can bind it into the shared dir.
-	cfg := Config{FormatMounts: os.Getuid() == 0}
+	cfg := env.cfg
+	cfg.FormatMounts = os.Getuid() == 0
 	rootfsMounts := buildEmbeddedRootfs(tb, bundleDir, cfg)
 
 	// Non-root / pre-extracted path: nil mounts means the rootfs is
@@ -329,7 +331,7 @@ func createSandboxContainerFast(ctx context.Context, tb testing.TB, env *sandbox
 
 	rootfsMounts := buildSandboxMemberMountsFromImages(tb, cfg, imgs, rootfsDir, preExtractedRootfs)
 
-	createOCISpec(tb, bundleDir, args, Config{FormatMounts: cfg.FormatMounts})
+	createOCISpec(tb, bundleDir, args, Config{FormatMounts: cfg.FormatMounts, ContainerAnnotations: cfg.ContainerAnnotations})
 
 	// Use null (empty) IO paths so the shim skips FIFO creation entirely.
 	// This avoids the per-container FIFO files and the goroutines that drain
@@ -710,6 +712,7 @@ func startSandboxShimInner(tb testing.TB, cfg Config, sandboxID, networkSandboxP
 		tc:         tc,
 		sandboxID:  sandboxID,
 		address:    params.Address,
+		cfg:        cfg,
 		stdoutBufs: make(map[string]*containerOutput),
 	}
 

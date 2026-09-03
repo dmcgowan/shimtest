@@ -180,6 +180,13 @@ func createOCISpec(tb testing.TB, bundleDir string, args []string, cfg Config, o
 		}
 	}
 
+	if len(cfg.ContainerAnnotations) > 0 {
+		spec.Annotations = make(map[string]string, len(cfg.ContainerAnnotations))
+		for k, v := range cfg.ContainerAnnotations {
+			spec.Annotations[k] = v
+		}
+	}
+
 	for _, opt := range opts {
 		opt(&spec)
 	}
