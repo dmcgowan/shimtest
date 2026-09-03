@@ -60,6 +60,11 @@ type Config struct {
 	// Debug enables verbose logging from the shim.
 	Debug bool
 
+	// ContainerAnnotations is a static set of OCI annotations applied
+	// to every container's spec (config.json) — both standalone
+	// containers and sandbox member containers.
+	ContainerAnnotations map[string]string
+
 	// ProvideNetwork tells NetworkSuite to set up a container's
 	// network connectivity itself (a dedicated network namespace plus
 	// a slirp4netns process attached to it; see attachContainerNetwork
